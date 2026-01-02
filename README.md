@@ -1,5 +1,6 @@
-🎹 Cantate: Liturgical Cantata Engine
-Cantate è un assistente analitico basato su Python progettato per armonizzare il calendario gregoriano con il complesso anno liturgico luterano del XVIII secolo. Il sistema identifica dinamicamente le cantate di Johann Sebastian Bach appropriate per ogni data, fornendo un contesto storico, linguistico e multimediale.
+🎹 Cantate è un assistente analitico basato su Python progettato per armonizzare il calendario gregoriano con il complesso anno liturgico luterano del XVIII secolo. Il sistema identifica dinamicamente le cantate di Johann Sebastian Bach appropriate per ogni data, fornendo un contesto storico, linguistico e multimediale.
+
+[![Esegui su Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/giruffo/Cantate/blob/main/cantate.py)
 
 🚀 Caratteristiche Principali
 Algoritmo Liturgico Dinamico: Calcola automaticamente le festività mobili (Pasqua, Pentecoste, Trinità, ecc.) tramite l'algoritmo di Butcher-Meeus.
