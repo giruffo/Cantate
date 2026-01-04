@@ -17,7 +17,6 @@ def get_liturgical_dates(year: int) -> dict[date, str]:
     adv4 = xtmas - timedelta(days=(xtmas.weekday() + 1) % 7 or 7)
     adv1 = adv4 - timedelta(weeks=3)
     
-    # Feste Fisse e Pasquali
     dates = {
         date(year, 1, 1): "New Year's Day", date(year, 1, 6): "Epiphany",
         date(year, 2, 2): "Purification", date(year, 3, 25): "Annunciation",
@@ -32,30 +31,18 @@ def get_liturgical_dates(year: int) -> dict[date, str]:
         easter + timedelta(days=56): "Trinity"
     }
     
-    # Domenica dopo Capodanno
     sun_ny = date(year, 1, 1) + timedelta(days=(6-date(year,1,1).weekday()) or 7)
     if sun_ny < date(year, 1, 6): dates[sun_ny] = "Sunday after New Year"
-
-    # Avvento
-    for i, n in enumerate(['I','II','III','IV']): 
-        dates[adv1 + timedelta(weeks=i)] = f"Advent {n}"
-    
-    # Settuagesima, Sessagesima, Estomihi
+    for i, n in enumerate(['I','II','III','IV']): dates[adv1 + timedelta(weeks=i)] = f"Advent {n}"
     sep = easter - timedelta(days=63)
     dates[sep], dates[sep + timedelta(days=7)], dates[sep + timedelta(days=14)] = "Septuagesima", "Sexagesima", "Estomihi"
-    
-    # Epifania
     curr, n = date(year, 1, 6) + timedelta(days=(6 - date(year, 1, 6).weekday()) or 7), 1
     while curr < sep:
         dates[curr] = f"Epiphany {n}"
         curr += timedelta(days=7)
         n += 1
-    
-    # Domeniche dopo Pasqua
     pnames = ["Quasimodogeniti", "Misericordias Domini", "Jubilate", "Cantate", "Rogate", "Exaudi"]
     for i, name in enumerate(pnames): dates[easter + timedelta(weeks=i+1)] = name
-    
-    # Domeniche dopo Trinità
     curr, n = (easter + timedelta(days=56)) + timedelta(days=7), 1
     while curr < adv1:
         dates[curr] = f"Trinity {n}"
@@ -63,7 +50,7 @@ def get_liturgical_dates(year: int) -> dict[date, str]:
         n += 1
     return dates
 
-# --- 2. DATABASE INTEGRALE DELLE CANTATE ---
+# --- 2. DATABASE INTEGRALE ---
 db = {
     'Advent I': [('61','Nun komm... I'),('62','Nun komm... II'),('36','Schwingt freudig')],
     'Christmas Day': [('63','Christen, ätzet'),('91','Gelobet seist du'),('110','Unser Mund'),('248/I','Oratorio I')],
@@ -95,11 +82,7 @@ db = {
 def analyze_week(target_date: date):
     lit_dates = get_liturgical_dates(target_date.year)
     monday = target_date - timedelta(days=target_date.weekday())
-    
-    # Header per superare i blocchi dei server (User-Agent camuffato)
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
     
     print(f"\n{'='*75}")
     print(f"🎹 BACH COMPANION - Settimana del {target_date.year}")
@@ -117,8 +100,8 @@ def analyze_week(target_date: date):
             b_num = bwv.split('/')[0] if '/' in bwv else bwv
             print(f"   🎼 BWV {bwv}: {title}")
             
-            # Link All of Bach (Netherlands Bach Society)
-            nbs_link = f"https://www.bachvereniging.nl/en/bwv/bwv-{b_num}/"
+            # --- CORREZIONE: Link All of Bach (Netherlands Bach Society) ---
+            nbs_link = f"https://www.bachvereniging.nl/en/bwv/?keywords=BWV{b_num}"
             print(f"      📄 Approfondimenti (All of Bach): {nbs_link}")
             
             # Controllo automatico testi IT (1-10)
@@ -131,11 +114,9 @@ def analyze_week(target_date: date):
                         label = sfx if sfx else "base"
                         print(f"      📖 Testo IT ({label}): {it_url}")
                         found_any = True
-                except:
-                    continue
+                except: continue
             
-            if not found_any:
-                print("      ⚠️ Nessun testo italiano trovato su bach-cantatas.com")
+            if not found_any: print("      ⚠️ Nessun testo italiano trovato su bach-cantatas.com")
             
             # Ricerca YouTube
             yt_query = f"Bach+BWV+{bwv.replace('/', '+').replace(' ', '+')}+Netherlands+Bach+Society"
@@ -146,8 +127,4 @@ def analyze_week(target_date: date):
 
 # --- ESECUZIONE ---
 if __name__ == "__main__":
-    # Analizza la settimana corrente di default
     analyze_week(date.today())
-    
-    # Per analizzare una data specifica, togli il # dalla riga sotto:
-    # analyze_week(date(2026, 4, 5))
